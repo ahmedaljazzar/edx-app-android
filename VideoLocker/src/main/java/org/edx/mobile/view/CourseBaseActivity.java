@@ -15,14 +15,12 @@ import com.google.inject.Inject;
 
 import org.edx.mobile.R;
 import org.edx.mobile.base.BaseFragmentActivity;
-import org.edx.mobile.event.DownloadEvent;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.module.prefs.PrefManager;
 import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.task.GetCourseStructureTask;
 import org.edx.mobile.third_party.iconify.IconDrawable;
-import org.edx.mobile.third_party.iconify.IconView;
 import org.edx.mobile.third_party.iconify.Iconify;
 import org.edx.mobile.util.AppConstants;
 import org.edx.mobile.util.BrowserUtil;
@@ -31,7 +29,6 @@ import org.edx.mobile.view.common.MessageType;
 import org.edx.mobile.view.common.TaskProcessCallback;
 import org.edx.mobile.view.custom.popup.menu.PopupMenu;
 
-import de.greenrobot.event.EventBus;
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 
@@ -50,12 +47,6 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
 
     @InjectView(R.id.last_access_bar)
     View lastAccessBar;
-
-    @InjectView(R.id.download_in_progress_bar)
-    View downloadProgressBar;
-
-    @InjectView(R.id.video_download_indicator)
-    IconView downloadIndicator;
 
     @InjectView(R.id.progress_spinner)
     ProgressBar progressWheel;
@@ -89,17 +80,7 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
     }
 
     protected void initialize(Bundle arg){
-
         setApplyPrevTransitionOnRestart(true);
-        ((IconView)findViewById(R.id.video_download_indicator)).setIconColorResource(R.color.edx_brand_primary_light);
-        findViewById(R.id.download_in_progress_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                environment.getRouter().showDownloads(CourseBaseActivity.this);
-            }
-        });
-
-
         if (!(NetworkUtil.isConnected(this))) {
             AppConstants.offline_flag = true;
             invalidateOptionsMenu();
@@ -112,17 +93,7 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
     protected void onResume() {
         super.onResume();
         invalidateOptionsMenu();
-        if ( !EventBus.getDefault().isRegistered(this) )
-            EventBus.getDefault().register(this);
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if ( EventBus.getDefault().isRegistered(this) )
-            EventBus.getDefault().unregister(this);
-    }
-
 
     @Override
     protected void onDestroy() {
@@ -133,7 +104,6 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
         }
         isDestroyed = true;
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -182,14 +152,6 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
         if (courseComponentId != null) {
             onLoadData();
         }
-    }
-
-    /**
-     * callback for EventBus
-     * https://github.com/greenrobot/EventBus
-     */
-    public void onEvent(DownloadEvent event) {
-        setVisibilityForDownloadProgressView(true);
     }
 
     @Override
@@ -367,12 +329,6 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
         if(progressWheel!=null){
             progressWheel.setVisibility(View.GONE);
         }
-    }
-
-
-    protected void setVisibilityForDownloadProgressView(boolean show){
-        if ( downloadProgressBar != null )
-            downloadProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     protected void hideLastAccessedView(View v) {

@@ -3,7 +3,6 @@ package org.edx.mobile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +13,7 @@ import android.widget.ListView;
 import com.google.inject.Inject;
 
 import org.edx.mobile.R;
+import org.edx.mobile.base.BaseFragmentActivity;
 import org.edx.mobile.base.MyVideosBaseFragment;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
@@ -144,18 +144,35 @@ public class CourseOutlineFragment extends MyVideosBaseFragment {
     private void initializeAdapter(){
         if (adapter == null) {
             // creating adapter just once
-            adapter = new CourseOutlineAdapter(getActivity(), environment.getDatabase(), environment.getStorage(), new CourseOutlineAdapter.DownloadListener() {
+            adapter = new CourseOutlineAdapter(getActivity(), environment.getDatabase()
+                    , environment.getStorage(), new CourseOutlineAdapter.DownloadListener() {
                 @Override
                 public void download(List<HasDownloadEntry> models) {
-                    downloadManager.downloadVideos(
-                            (List) models, (FragmentActivity) getActivity(), (VideoDownloadHelper.DownloadManagerCallback) getActivity());
-
+                    if (AppConstants.offline_flag) {
+                        ((BaseFragmentActivity) getActivity()).
+                                showInfoMessage(getString(R.string.wifi_off_message));
+                    } else {
+                        downloadManager.downloadVideos(
+                                models, getActivity()
+                                , (VideoDownloadHelper.DownloadManagerCallback) getActivity());
+                    }
                 }
 
                 @Override
                 public void download(DownloadEntry videoData) {
-                    downloadManager.downloadVideo(
-                            videoData, (FragmentActivity) getActivity(), (VideoDownloadHelper.DownloadManagerCallback) getActivity());
+                    if (AppConstants.offline_flag) {
+                        ((BaseFragmentActivity) getActivity()).
+                                showInfoMessage(getString(R.string.wifi_off_message));
+                    } else {
+                        downloadManager.downloadVideo(
+                                videoData, getActivity()
+                                , (VideoDownloadHelper.DownloadManagerCallback) getActivity());
+                    }
+                }
+
+                @Override
+                public void viewDownloadStatus() {
+                    environment.getRouter().showDownloads(getActivity());
                 }
             });
         }
