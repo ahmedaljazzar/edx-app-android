@@ -122,6 +122,10 @@ public interface ISegment {
 
     Properties trackOpenInBrowser(String blockId, String courseId, boolean isSupported);
 
+    Properties trackProfileViewed(@android.support.annotation.NonNull String username);
+
+    Properties trackProfilePhotoSet(boolean fromCamera);
+
 
     interface Keys {
         String NAME = "name";
@@ -227,7 +231,10 @@ public interface ISegment {
         String SETTING_COURSES_VISIBLE_CHANGE = "edx.bi.app.user.share_courses";
 
         String NAVIGATION = "navigation";
+        String PROFILE = "profile";
         String SWITCH_OUTLINE_MODE = "edx.bi.app.navigation.switched-mode.clicked";
+        String PROFILE_VIEWED = "edx.bi.app.profile.view";
+        String PROFILE_PHOTO_SET = "edx.bi.app.profile.setphoto";
         String COMPONENT_VIEWED = "edx.bi.app.navigation.component.viewed";
         String OPEN_IN_BROWSER = "edx.bi.app.navigation.open-in-browser";
         String OUTLINE_MODE_FULL = "full";
@@ -302,5 +309,7 @@ public interface ISegment {
         String OPEN_IN_BROWSER = "Browser Launched";
         String PUSH_NOTIFICATION_RECEIVED = "notification-received";
         String PUSH_NOTIFICATION_TAPPED = "notification-tapped";
+        String PROFILE_VIEWED = "view profile";
+        String PROFILE_PHOTO_SET = "set profile photo";
     }
 }
