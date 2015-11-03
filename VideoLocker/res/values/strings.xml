@@ -394,7 +394,7 @@
     <!-- Label to show empty assessment -->
     <string name="assessment_empty">There are no learning material in this section.</string>
     <!-- Label to show empty assessment -->
-    <string name="assessment_empty_coming_soon">Coming soon.</string>
+    <string name="assessment_empty_coming_soon">Coming soon</string>
 
     <!-- Label to notify user to rotate device for viewing a video in full screen -->
     <string name="assessment_rotate_for_fullscreen">Rotate your device to view this video in full screen.</string>
@@ -460,8 +460,6 @@
     <string name="login_error">Sign-in Error</string>
     <!-- Alert dialog title when login fails due to lack of internet -->
     <string name="no_connectivity">Connection Error</string>
-    <!-- Visual separator like A | B -->
-    <string name="or_symbol"> | </string>
 
     <!-- Wifi New Message -->
     <!-- Toggle to allow downloads using cellular data -->

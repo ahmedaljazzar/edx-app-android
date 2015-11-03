@@ -7,9 +7,9 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum StartType {
     @SerializedName("string")
-    STRING_START,
+    STRING,
     @SerializedName("timestamp")
-    TIMESTAMP_START,
+    TIMESTAMP,
     @SerializedName("empty")
-    NONE_START
+    EMPTY
 }

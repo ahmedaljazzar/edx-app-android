@@ -1,20 +1,24 @@
 package org.edx.mobile.model.api;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.View;
 
 import com.google.inject.Inject;
+
+import org.edx.mobile.R;
 import org.edx.mobile.social.SocialMember;
 import org.edx.mobile.util.Config;
 import org.edx.mobile.util.DateUtil;
 import org.edx.mobile.util.SocialUtils;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("serial")
 public class CourseEntry implements Serializable {
-
     private List<SocialMember> members_list;
 
     private LatestUpdateModel latest_updates;
@@ -80,7 +84,7 @@ public class CourseEntry implements Serializable {
     }
 
     public StartType getStartType() {
-        if(start_type == null) start_type = StartType.NONE_START;
+        if(start_type == null) start_type = StartType.EMPTY;
         return start_type;
     }
 
@@ -248,22 +252,72 @@ public class CourseEntry implements Serializable {
 
     }
 
-    public String getDescription(Context context){
+    @SuppressLint("SimpleDateFormat")
+    public String getDescription(Context context) {
         StringBuilder detailBuilder = new StringBuilder();
-        if ( getOrg() != null){
-            detailBuilder.append( getOrg());
+
+        if (getOrg() != null) {
+            detailBuilder.append(getOrg());
         }
-        if ( getNumber() != null) {
-            if (detailBuilder.length() > 0){
+
+        if (getNumber() != null) {
+            if (detailBuilder.length() > 0) {
                 detailBuilder.append(" | ");
             }
-            detailBuilder.append( getNumber());
+            detailBuilder.append(getNumber());
 
         }
-        //https://openedx.atlassian.net/browse/MA-858
-        //we remove the ending data for now
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
+        Date startDate = DateUtil.convertToDate(start);
+        String startDt;
+        Date endDate = DateUtil.convertToDate(end);
+        String endDt;
+        if (detailBuilder.length() > 0) {
+            detailBuilder.append(" | ");
+        }
+        if (hasDefaultStartDate()) {
+            detailBuilder.append(context.getString(R.string.assessment_empty_coming_soon).toUpperCase());
+        } else if (isStarted() && isEnded()) {
+            if (endDate != null) {
+                endDt = context.getString(R.string.label_ended)
+                        + " - " + dateFormat.format(endDate);
+                detailBuilder.append(endDt.toUpperCase());
+            }
+        } else if (isStarted() && !isEnded()) {
+            if (endDate != null) {
+                endDt = context.getString(R.string.label_ending_on)
+                        + " - " + dateFormat.format(endDate);
+                detailBuilder.append(endDt.toUpperCase());
+
+            }
+        } else {
+            if (startDate != null) {
+                startDt = context.getString(R.string.label_starting_from)
+                        + " - " + dateFormat.format(startDate);
+                detailBuilder.append(startDt.toUpperCase());
+            }
+        }
+
+        if (detailBuilder.length() > 0) {
+            int secondlastCharIndex = detailBuilder.length() - 2;
+            if (detailBuilder.charAt(secondlastCharIndex) == '|') {
+                detailBuilder.delete(secondlastCharIndex, detailBuilder.length());
+            }
+        }
 
         return detailBuilder.toString();
+    }
+
+    /**
+     * This functions checks if a course's start date is set to default
+     * i.e. when its {@link #start_type} is set to {@link StartType#EMPTY}
+     *
+     * @return true if start date is default, false otherwise
+     */
+    @SuppressLint("SimpleDateFormat")
+    public boolean hasDefaultStartDate() {
+        return start_type != null && start_type == StartType.EMPTY;
     }
 
 }
