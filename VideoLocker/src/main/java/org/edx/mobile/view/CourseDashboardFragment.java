@@ -1,7 +1,7 @@
 package org.edx.mobile.view;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +44,10 @@ public class CourseDashboardFragment extends RoboFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        final Bundle bundle = getArguments();
+        courseData = (EnrolledCoursesResponse) bundle
+                .getSerializable(CourseData);
     }
 
     @Override
@@ -71,17 +75,19 @@ public class CourseDashboardFragment extends RoboFragment {
             }
         });
 
-        holder = createViewHolder(inflater, parent);
+        if (courseData != null && !TextUtils.isEmpty(courseData.getCourse().getDiscussionUrl())) {
+            holder = createViewHolder(inflater, parent);
 
-        holder.typeView.setIcon(Iconify.IconValue.fa_comments_o);
-        holder.titleView.setText(R.string.discussion_title);
-        holder.subtitleView.setText(R.string.discussion_subtitle);
-        holder.rowView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                environment.getRouter().showCourseDiscussionTopics(getActivity(), courseData);
-            }
-        });
+            holder.typeView.setIcon(Iconify.IconValue.fa_comments_o);
+            holder.titleView.setText(R.string.discussion_title);
+            holder.subtitleView.setText(R.string.discussion_subtitle);
+            holder.rowView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    environment.getRouter().showCourseDiscussionTopics(getActivity(), courseData);
+                }
+            });
+        }
 
         holder = createViewHolder(inflater, parent);
 
@@ -114,10 +120,6 @@ public class CourseDashboardFragment extends RoboFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         try {
-            final Bundle bundle = getArguments();
-            courseData = (EnrolledCoursesResponse) bundle
-                    .getSerializable(CourseData);
-
             if ( courseData == null )
                 return;
 
