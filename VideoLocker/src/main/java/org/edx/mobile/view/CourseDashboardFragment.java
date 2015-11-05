@@ -45,8 +45,8 @@ public class CourseDashboardFragment extends RoboFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Bundle bundle = getArguments();
-        courseData = (EnrolledCoursesResponse) bundle
+        final Bundle args = getArguments();
+        courseData = (EnrolledCoursesResponse) args
                 .getSerializable(CourseData);
     }
 
@@ -75,7 +75,9 @@ public class CourseDashboardFragment extends RoboFragment {
             }
         });
 
-        if (courseData != null && !TextUtils.isEmpty(courseData.getCourse().getDiscussionUrl())) {
+        if (courseData != null
+                && !TextUtils.isEmpty(courseData.getCourse().getDiscussionUrl())
+                && environment.getConfig().isDiscussionsEnabled()) {
             holder = createViewHolder(inflater, parent);
 
             holder.typeView.setIcon(Iconify.IconValue.fa_comments_o);
