@@ -59,6 +59,7 @@ public abstract class MyCourseAdapter extends BaseListAdapter<EnrolledCoursesRes
         holder.courseTitle.setText(courseData.getName());
 
         if (enrollment.getCourse().hasUpdates()) {
+            holder.startingFrom.setVisibility(View.GONE);
             holder.newCourseContent.setVisibility(View.VISIBLE);
             holder.newCourseContent.setTag(courseData);
             holder.newCourseContent
@@ -71,7 +72,9 @@ public abstract class MyCourseAdapter extends BaseListAdapter<EnrolledCoursesRes
             });
         } else {
             holder.newCourseContent.setVisibility(View.GONE);
-            holder.courseRun.setText(courseData.getDescription(getContext()));
+            holder.startingFrom.setVisibility(View.VISIBLE);
+            holder.courseRun.setText(courseData.getDescription(getContext(), false));
+            holder.startingFrom.setText(courseData.getFormattedStartDate(getContext()));
         }
 
         if(enrollment.isCertificateEarned()){
@@ -111,7 +114,9 @@ public abstract class MyCourseAdapter extends BaseListAdapter<EnrolledCoursesRes
         holder.courseTitle = (TextView) convertView
                 .findViewById(R.id.course_name);
         holder.courseRun = (TextView) convertView
-                .findViewById(R.id.course_detail);
+                .findViewById(R.id.course_run);
+        holder.startingFrom = (TextView) convertView
+                .findViewById(R.id.starting_from);
         holder.courseImage = (ImageView) convertView
                 .findViewById(R.id.course_image);
         holder.newCourseContent = convertView
@@ -129,6 +134,7 @@ public abstract class MyCourseAdapter extends BaseListAdapter<EnrolledCoursesRes
         ImageView courseImage;
         TextView courseTitle;
         TextView courseRun;
+        TextView startingFrom;
         View certificateBanner;
         View newCourseContent;
         ViewGroup facePileContainer;

@@ -130,7 +130,7 @@ public class CourseDashboardFragment extends RoboFragment {
 
             courseTextName.setText(courseData.getCourse().getName());
             CourseEntry course = courseData.getCourse();
-            courseTextDetails.setText(course.getDescription(getActivity()));
+            courseTextDetails.setText(course.getDescription(getActivity(), true));
 
         } catch (Exception ex) {
             logger.error(ex);

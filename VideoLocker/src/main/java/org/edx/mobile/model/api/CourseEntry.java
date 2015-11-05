@@ -2,7 +2,7 @@ package org.edx.mobile.model.api;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
+import android.text.TextUtils;
 
 import com.google.inject.Inject;
 
@@ -252,51 +252,27 @@ public class CourseEntry implements Serializable {
 
     }
 
-    @SuppressLint("SimpleDateFormat")
-    public String getDescription(Context context) {
+    public String getDescription(Context context, boolean withStartDate) {
         StringBuilder detailBuilder = new StringBuilder();
 
-        if (getOrg() != null) {
-            detailBuilder.append(getOrg());
+        if (!TextUtils.isEmpty(org)) {
+            detailBuilder.append(org);
         }
 
-        if (getNumber() != null) {
+        if (!TextUtils.isEmpty(number)) {
             if (detailBuilder.length() > 0) {
                 detailBuilder.append(" | ");
             }
-            detailBuilder.append(getNumber());
+            detailBuilder.append(number);
 
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
-        Date startDate = DateUtil.convertToDate(start);
-        String startDt;
-        Date endDate = DateUtil.convertToDate(end);
-        String endDt;
-        if (detailBuilder.length() > 0) {
-            detailBuilder.append(" | ");
-        }
-        if (hasDefaultStartDate()) {
-            detailBuilder.append(context.getString(R.string.assessment_empty_coming_soon).toUpperCase());
-        } else if (isStarted() && isEnded()) {
-            if (endDate != null) {
-                endDt = context.getString(R.string.label_ended)
-                        + " - " + dateFormat.format(endDate);
-                detailBuilder.append(endDt.toUpperCase());
+        if (withStartDate) {
+            if (detailBuilder.length() > 0) {
+                detailBuilder.append(" | ");
             }
-        } else if (isStarted() && !isEnded()) {
-            if (endDate != null) {
-                endDt = context.getString(R.string.label_ending_on)
-                        + " - " + dateFormat.format(endDate);
-                detailBuilder.append(endDt.toUpperCase());
 
-            }
-        } else {
-            if (startDate != null) {
-                startDt = context.getString(R.string.label_starting_from)
-                        + " - " + dateFormat.format(startDate);
-                detailBuilder.append(startDt.toUpperCase());
-            }
+            detailBuilder.append(getFormattedStartDate(context));
         }
 
         if (detailBuilder.length() > 0) {
@@ -309,13 +285,44 @@ public class CourseEntry implements Serializable {
         return detailBuilder.toString();
     }
 
+    @SuppressLint("SimpleDateFormat")
+    public String getFormattedStartDate(Context context){
+        StringBuilder dateBuilder = new StringBuilder();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd");
+        Date startDate = DateUtil.convertToDate(start);
+        Date endDate = DateUtil.convertToDate(end);
+        if (hasDefaultStartDate()) {
+            dateBuilder.append(context.getString(R.string.assessment_empty_coming_soon).toUpperCase());
+        } else if (isEnded()) {
+            if (endDate != null) {
+                dateBuilder.append(context.getString(R.string.label_ended));
+                dateBuilder.append(" - ");
+                dateBuilder.append(dateFormat.format(endDate));
+            }
+        } else if (isStarted()) {
+            if (endDate != null) {
+                dateBuilder.append(context.getString(R.string.label_ending_on));
+                dateBuilder.append(" - ");
+                dateBuilder.append(dateFormat.format(endDate));
+            }
+        } else {
+            if (startDate != null) {
+                dateBuilder.append(context.getString(R.string.label_starting_from));
+                dateBuilder.append(" - ");
+                dateBuilder.append(dateFormat.format(startDate));
+            }
+        }
+
+        return dateBuilder.toString().toUpperCase();
+    }
+
     /**
-     * This functions checks if a course's start date is set to default
+     * This function checks if a course's start date is unset
      * i.e. when its {@link #start_type} is set to {@link StartType#EMPTY}
      *
      * @return true if start date is default, false otherwise
      */
-    @SuppressLint("SimpleDateFormat")
     public boolean hasDefaultStartDate() {
         return start_type != null && start_type == StartType.EMPTY;
     }
