@@ -13,7 +13,6 @@ import android.widget.ListView;
 import com.google.inject.Inject;
 
 import org.edx.mobile.R;
-import org.edx.mobile.base.BaseFragmentActivity;
 import org.edx.mobile.base.MyVideosBaseFragment;
 import org.edx.mobile.logger.Logger;
 import org.edx.mobile.model.api.EnrolledCoursesResponse;
@@ -22,6 +21,7 @@ import org.edx.mobile.model.course.BlockPath;
 import org.edx.mobile.model.course.CourseComponent;
 import org.edx.mobile.model.course.HasDownloadEntry;
 import org.edx.mobile.model.db.DownloadEntry;
+import org.edx.mobile.module.prefs.PrefManager;
 import org.edx.mobile.services.CourseManager;
 import org.edx.mobile.services.VideoDownloadHelper;
 import org.edx.mobile.util.AppConstants;
@@ -144,34 +144,45 @@ public class CourseOutlineFragment extends MyVideosBaseFragment {
     private void initializeAdapter(){
         if (adapter == null) {
             // creating adapter just once
-            adapter = new CourseOutlineAdapter(getActivity(), environment.getDatabase()
-                    , environment.getStorage(), new CourseOutlineAdapter.DownloadListener() {
+            adapter = new CourseOutlineAdapter(getActivity(), environment.getDatabase(),
+                    environment.getStorage(), new CourseOutlineAdapter.DownloadListener() {
                 @Override
                 public void download(List<HasDownloadEntry> models) {
-                    if (AppConstants.offline_flag) {
-                        ((BaseFragmentActivity) getActivity()).
-                                showInfoMessage(getString(R.string.wifi_off_message));
+                    CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
+                    if (new PrefManager(activity, PrefManager.Pref.WIFI).getBoolean(PrefManager.Key.DOWNLOAD_ONLY_ON_WIFI, true)) {
+                        if (!NetworkUtil.isConnectedWifi(activity)) {
+                            activity.showInfoMessage(getString(R.string.wifi_off_message));
+                            return;
+                        }
                     } else {
-                        downloadManager.downloadVideos(
-                                models, getActivity()
-                                , (VideoDownloadHelper.DownloadManagerCallback) getActivity());
+                        if (AppConstants.offline_flag) {
+                            activity.showInfoMessage(getString(R.string.network_not_connected));
+                            return;
+                        }
                     }
+                    downloadManager.downloadVideos(models, getActivity(),
+                            (VideoDownloadHelper.DownloadManagerCallback) getActivity());
                 }
 
                 @Override
                 public void download(DownloadEntry videoData) {
-                    if (AppConstants.offline_flag) {
-                        ((BaseFragmentActivity) getActivity()).
-                                showInfoMessage(getString(R.string.wifi_off_message));
+                    CourseOutlineActivity activity = (CourseOutlineActivity) getActivity();
+                    if (new PrefManager(activity, PrefManager.Pref.WIFI).getBoolean(PrefManager.Key.DOWNLOAD_ONLY_ON_WIFI, true)) {
+                        if (!NetworkUtil.isConnectedWifi(activity)) {
+                            activity.showInfoMessage(getString(R.string.wifi_off_message));
+                            return;
+                        }
                     } else {
-                        downloadManager.downloadVideo(
-                                videoData, getActivity()
-                                , (VideoDownloadHelper.DownloadManagerCallback) getActivity());
+                        if (AppConstants.offline_flag) {
+                            activity.showInfoMessage(getString(R.string.network_not_connected));
+                            return;
+                        }
                     }
+                    downloadManager.downloadVideo(videoData, activity, activity);
                 }
 
                 @Override
-                public void viewDownloadStatus() {
+                public void viewDownloadsStatus() {
                     environment.getRouter().showDownloads(getActivity());
                 }
             });

@@ -59,8 +59,6 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
 
     private GetCourseStructureTask getHierarchyTask;
 
-    private boolean isDestroyed;
-
     protected abstract String getUrlForWebView();
 
     protected abstract void onLoadData();
@@ -102,7 +100,6 @@ public abstract  class CourseBaseActivity  extends BaseFragmentActivity implemen
             getHierarchyTask.cancel(true);
             getHierarchyTask = null;
         }
-        isDestroyed = true;
     }
 
     @Override

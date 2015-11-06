@@ -52,16 +52,6 @@ public class DownloadCompleteReceiver extends RoboBroadcastReceiver {
                                 ISegment segIO = environment.getSegment();
                                 segIO.trackDownloadComplete(download.videoId, download.eid, 
                                         download.lmsUrl);
-
-                                // update count of downloaded videos
-                                // store user's data in his own preference file, so as to keep it unique
-                                PrefManager p = new PrefManager(context, download.username);
-                                long count = p.getLong(PrefManager.Key.COUNT_OF_VIDEOS_DOWNLOADED);
-                                if (count < 0) {
-                                    count = 0;
-                                }
-                                count ++;
-                                p.put(PrefManager.Key.COUNT_OF_VIDEOS_DOWNLOADED, count);
                             }
                         }
 

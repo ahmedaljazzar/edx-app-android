@@ -78,13 +78,8 @@ public class MyVideosTabActivity extends PlayerActivity implements VideoListCall
             setTitle(getString(R.string.label_my_videos));
         }
 
-        try{
-            if(recentVideosFragment!=null){
-                recentVideosFragment.setCallback(this);
-            }
-            clearDownloadCount();
-        }catch(Exception ex){
-            logger.error(ex);
+        if(recentVideosFragment!=null){
+            recentVideosFragment.setCallback(this);
         }
     }
 
@@ -150,18 +145,6 @@ public class MyVideosTabActivity extends PlayerActivity implements VideoListCall
             }
         } catch(Exception ex) {
             logger.error(ex);
-        }
-    }
-
-    private void clearDownloadCount() {
-        try{
-            PrefManager p = new PrefManager(this, PrefManager.Pref.LOGIN);
-            // user specific data is stored in his own file
-            ProfileModel profile = p.getCurrentUserProfile();
-            p = new PrefManager(this, profile.username);
-            p.put(PrefManager.Key.COUNT_OF_VIDEOS_DOWNLOADED, 0);
-        }catch(Exception e){
-            logger.error(e);
         }
     }
 

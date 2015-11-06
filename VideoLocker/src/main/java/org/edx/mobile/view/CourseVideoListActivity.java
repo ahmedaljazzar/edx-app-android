@@ -119,7 +119,10 @@ public abstract class CourseVideoListActivity  extends CourseBaseActivity implem
     }
 
     @Override
-    protected void updateDownloadProgress(final int progressPercent){}
+    protected void updateDownloadProgress(final int progressPercent) {}
+
+    @Override
+    public void showProgressDialog(int numDownloads) {}
 
     @Override
     public void onDownloadSuccess(Long result) {
@@ -132,29 +135,7 @@ public abstract class CourseVideoListActivity  extends CourseBaseActivity implem
     }
 
     @Override
-    public void showProgressDialog(int numDownloads) {}
-
-    @Override
     public abstract  void updateListUI();
-
-    //TODO - legacy code use one minute tick loop to sync some UI status, like
-    //total download progress. this is a simple approach, but may not be the
-    //best one.
-    protected void onTick() {
-        // this is a per second callback
-        try {
-            if (!AppConstants.offline_flag) {
-                if (environment.getDatabase() != null) {
-                    boolean downloading = environment.getDatabase().isAnyVideoDownloading(null);
-                    if (downloading) {
-                        environment.getStorage().getAverageDownloadProgress(averageProgressCallback);
-                    }
-                }   //store not null check
-            }
-        } catch (Exception ex) {
-            logger.error(ex);
-        }
-    }
 
     protected boolean isOnCourseOutline(){
         if (courseComponentId == null) return true;

@@ -41,7 +41,7 @@ public class CourseOutlineAdapter extends BaseAdapter{
     public interface DownloadListener {
         void download(List<HasDownloadEntry> models);
         void download(DownloadEntry videoData);
-        void viewDownloadStatus();
+        void viewDownloadsStatus();
     }
 
     private CourseComponent rootComponent;
@@ -302,26 +302,25 @@ public class CourseOutlineAdapter extends BaseAdapter{
                         public void onResult(DownloadEntry.DownloadedState state) {
                             if (state == null || state == DownloadEntry.DownloadedState.ONLINE) {
                                 // not yet downloaded
-                                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.ONLINE
-                                        , new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        mDownloadListener.download(videoData);
-                                    }
-                                });
+                                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.ONLINE,
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                mDownloadListener.download(videoData);
+                                            }
+                                        });
                             } else if (state == DownloadEntry.DownloadedState.DOWNLOADING) {
                                 // may be download in progress
-                                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADING
-                                        , new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        mDownloadListener.viewDownloadStatus();
-                                    }
-                                });
+                                setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADING,
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                mDownloadListener.viewDownloadsStatus();
+                                            }
+                                        });
                             } else if (state == DownloadEntry.DownloadedState.DOWNLOADED) {
                                 setRowStateOnDownload(viewHolder, DownloadEntry.DownloadedState.DOWNLOADED, null);
                             }
-
                         }
 
                         @Override
@@ -376,7 +375,7 @@ public class CourseOutlineAdapter extends BaseAdapter{
                     , new View.OnClickListener() {
                             @Override
                             public void onClick(View downloadView) {
-                                mDownloadListener.viewDownloadStatus();
+                                mDownloadListener.viewDownloadsStatus();
                             }
                         });
             } else {
@@ -408,21 +407,19 @@ public class CourseOutlineAdapter extends BaseAdapter{
                 row.bulkDownload.setIcon(Iconify.IconValue.fa_spinner);
                 row.bulkDownload.setRotating(true);
                 row.bulkDownload.setIconColorResource(R.color.edx_brand_primary_base);
-                row.numOfVideoAndDownloadArea.setOnClickListener(listener);
                 break;
             case DOWNLOADED:
                 row.bulkDownload.setIcon(Iconify.IconValue.fa_check);
                 row.bulkDownload.setRotating(false);
                 row.bulkDownload.setIconColorResource(R.color.edx_grayscale_neutral_base);
-                row.numOfVideoAndDownloadArea.setOnClickListener(listener);
                 break;
-            default:
+            case ONLINE:
                 row.bulkDownload.setIcon(Iconify.IconValue.fa_arrow_down);
                 row.bulkDownload.setRotating(false);
                 row.bulkDownload.setIconColorResource(R.color.edx_grayscale_neutral_base);
-                row.numOfVideoAndDownloadArea.setOnClickListener(listener);
                 break;
         }
+        row.numOfVideoAndDownloadArea.setOnClickListener(listener);
     }
 
     public  View getHeaderView(int position, View convertView, ViewGroup parent){
